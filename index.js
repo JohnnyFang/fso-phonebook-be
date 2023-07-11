@@ -10,48 +10,10 @@ app.use(express.json())
 
 
 morgan.token('post-content', function(req, res) {
-    if (req.method === 'POST') return JSON.stringify(req.body)
- })
+  if (req.method === 'POST') return JSON.stringify(req.body)
+})
 app.use(morgan(':method :url :response-time :post-content'))
 
-const min = 6
-const max = 10000000
-
-let persons = [
-    { 
-      "id": 1,
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": 2,
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": 3,
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": 4,
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
-
-
-const getPerson = (id) => persons.find(person => person.id == id)
-
-const getPersonByName = (name) => persons.find(person => person.name == name)
-
-const generateId = () => persons.length > 0 ? Math.max(...persons.map(p => p.id))+1 : 0
-
-const generateRandomId = () => {
-    const cMin = Math.ceil(min);
-    const fMax = Math.floor(max);
-    return Math.floor(Math.random() * (fMax - cMin) + cMin); // The maximum is exclusive and min inclusive
-}
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
@@ -64,19 +26,19 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.post('/api/persons', (request, response, next) => {
-    const body = request.body
-    const person = new Person({
-      name: body.name,
-      number: body.number,
-    })
-
-    person.save().then(savedPerson => {
-      response.json(savedPerson)
-    })
-    .catch(error => next(error))
+  const body = request.body
+  const person = new Person({
+    name: body.name,
+    number: body.number,
   })
 
-app.put('/api/persons/:id', (request, response) => {
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
+    .catch(error => next(error))
+})
+
+app.put('/api/persons/:id', (request, response, next) => {
   const { name, number } = request.body
 
   Person.findByIdAndUpdate(
@@ -87,20 +49,20 @@ app.put('/api/persons/:id', (request, response) => {
     .then(person => {
       if(person) {
         response.json(person)
-      }     
+      }
     })
     .catch(error => next(error))
 
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
-    Person.findById(request.params.id).then(person => {
-      if(person) {
-        response.json(person)
-      } else {
-        response.status(404).end()
-      }      
-    })
+  Person.findById(request.params.id).then(person => {
+    if(person) {
+      response.json(person)
+    } else {
+      response.status(404).end()
+    }
+  })
     .catch(error => next(error))
 })
 
