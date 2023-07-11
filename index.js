@@ -1,8 +1,9 @@
-require('dotenv').config()
 const express = require('express')
-const morgan = require('morgan')
-const Person = require('./models/persons')
 const app = express()
+const morgan = require('morgan')
+require('dotenv').config()
+
+const Person = require('./models/person')
 
 app.use(express.static('build'))
 app.use(express.json())
